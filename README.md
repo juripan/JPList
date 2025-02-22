@@ -19,4 +19,10 @@ int int_cmp(int x, int y){return x - y;}
 ```C
 add_base_func(int, format_int, int_cmp)
 ```
+**IMPORTANT: you cannot use pointers as a type in the list UNLESS you typedef it** \
+For example:
+```C
+typedef int* int_ptr
+add_base_func(int_ptr, format_int_ptr, int_ptr_cmp)
+```
 NOTE: you can also add specific features only by using the "add" macros defined in the jplist header file
