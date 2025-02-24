@@ -32,10 +32,10 @@ typedef char* str;
 ///////////////////
 
 //alternate syntax for accessing list elements (no "((type*)list->data)[index]" needed)
-#define iget(list, type, index) (((type*)list->data)[index])
+#define IGET(list, type, index) (((type*)list->data)[index])
 
 //prints an error message to stderr 
-#define printerr(msg) fprintf(stderr, msg "\n")
+#define PRINTERR(msg) fprintf(stderr, msg "\n")
 
 /////////////////////////
 // list base "methods" ////////////////////////////////////////////////////////////////////////////
@@ -48,16 +48,16 @@ typedef char* str;
  * cmp_func is a function pointer that determines how the arrays content will be compared (example: strcmp() in <string.h>)
 */
 
-#define add_base_func(type, format_str, cmp_func) \
-add_print_list(type, format_str) \
-add_append(type) \
-add_pop(type) \
-add_insert(type) \
-add_remove(type) \
-add_find(type, cmp_func) \
-add_map(type) \
-add_filter(type) \
-add_list_eq(type, cmp_func) \
+#define ADD_BASE_FUNC(type, format_str, cmp_func) \
+ADD_PRINT_LIST(type, format_str) \
+ADD_APPEND(type) \
+ADD_POP(type) \
+ADD_INSERT(type) \
+ADD_REMOVE(type) \
+ADD_FIND(type, cmp_func) \
+ADD_MAP(type) \
+ADD_FILTER(type) \
+ADD_LIST_EQ(type, cmp_func) \
 
 /*
  * macro that calls a fuction that returns a pointer to a struct of type JPList,
@@ -87,7 +87,7 @@ void list_dtor(JPList **list_ptr);
  * prints out the data that is in the list,
  * format_macro sets the way it is printed (gets called with the index as a parameter inside of printf)
  */
-#define add_print_list(type, format_macro) \
+#define ADD_PRINT_LIST(type, format_macro) \
 void print_list_##type(JPList *list){ \
     printf("["); \
     for(size_t i = 0; i < list->len; i++){ \
@@ -113,7 +113,7 @@ void print_list_##type(JPList *list){ \
  * if its about to exceed its size then it reallocs a new bigger array
     and updates its pointer to point to the new array
 */
-#define add_append(type) \
+#define ADD_APPEND(type) \
 void append_##type(JPList *list, type item){ \
     if(list->len >= list->size - 1) { \
         list_reallocator(list, type) \
@@ -127,10 +127,10 @@ void append_##type(JPList *list, type item){ \
  * if the list is empty then it prints "list is empty, cant pop more items" 
     to stderr and crashes the program
 */
-#define add_pop(type) \
+#define ADD_POP(type) \
 type pop_##type(JPList *list){ \
     if (list->len == 0){ \
-        printerr("JPList is empty, can't pop more items"); \
+        PRINTERR("JPList is empty, can't pop more items"); \
         exit(EXIT_FAILURE); \
     } \
     list->len--; \
@@ -144,10 +144,10 @@ type pop_##type(JPList *list){ \
  * if you pass in an index thats out of range it throws an error and kills the program
  * if you want to add to the end of the list use append_"type" instead
  */
-#define add_insert(type) \
+#define ADD_INSERT(type) \
 void insert_##type(JPList* list, const unsigned int index, const type item) { \
     if(index > list->len - 1) { \
-        printerr("Invalid insert operation, index out of range"); \
+        PRINTERR("Invalid insert operation, index out of range"); \
         exit(EXIT_FAILURE); \
     } \
     if(list->size <= list->len) { \
@@ -165,10 +165,10 @@ void insert_##type(JPList* list, const unsigned int index, const type item) { \
  * removes an item at the give index and moves all of the items to fill in the gap left behind
  * if you pass in an index thats out of range it throws an error and kills the program
  */
-#define add_remove(type) \
+#define ADD_REMOVE(type) \
 void remove_##type(JPList* list, const unsigned int index) { \
     if(index > list->len - 1) { \
-        printerr("Invalid remove operation, index out of range"); \
+        PRINTERR("Invalid remove operation, index out of range"); \
         exit(EXIT_FAILURE); \
     } \
     for(size_t i = index; i + 1 < list->len; i++) { \
@@ -182,10 +182,10 @@ void remove_##type(JPList* list, const unsigned int index) { \
  * returns the items index,
  * if not found returns -1
  */
-#define add_find(type, cmp_func) \
+#define ADD_FIND(type, cmp_func) \
 int find_##type(JPList* list, type item) { \
     for(size_t i = 0; i < list->len; i++) { \
-        if (cmp_func(iget(list, type, i), item) == 0){ \
+        if (cmp_func(IGET(list, type, i), item) == 0){ \
             return i; \
         } \
     } \
@@ -196,10 +196,10 @@ int find_##type(JPList* list, type item) { \
  * runs the passed in function on every item in the list,
  * function accepts a pointer to the type of item in the list(modifies the list in-place)
  */
-#define add_map(type) \
+#define ADD_MAP(type) \
 void map_##type(const JPList* list, void(*func)(type*)) { \
     for(size_t i = 0; i < list->len; i++) { \
-        func(&iget(list, type, i)); \
+        func(&IGET(list, type, i)); \
     } \
 }
 
@@ -208,12 +208,12 @@ void map_##type(const JPList* list, void(*func)(type*)) { \
  * creates a new list that contains the items that satisfy the condition criteria,
  * returns a pointer to the new list
  */
-#define add_filter(type) \
+#define ADD_FILTER(type) \
 JPList* filter_##type(JPList* list, int(*condition)(type)) { \
     JPList* res = list_ctor_(sizeof(type), list->len, NULL); \
     for(size_t i = 0; i < list->len; i++){ \
-        if(condition(iget(list, type, i))) { \
-            iget(res, type, res->len) = iget(list, type, i); \
+        if(condition(IGET(list, type, i))) { \
+            IGET(res, type, res->len) = IGET(list, type, i); \
             res->len++; \
         } \
     } \
@@ -224,13 +224,13 @@ JPList* filter_##type(JPList* list, int(*condition)(type)) { \
  * compares 2 lists by their length and their content using the compare function,
  * returns 1 if they are the same, else returns 0
  */
-#define add_list_eq(type, cmp_func) \
+#define ADD_LIST_EQ(type, cmp_func) \
 int eq_list_##type(JPList* list1, JPList* list2){ \
     if(list1->len != list2->len){ \
         return 0; \
     } \
     for(unsigned i = 0; i < list1->len; i++){ \
-        if(cmp_func(iget(list1, type, i), iget(list2, type, i)) != 0){ \
+        if(cmp_func(IGET(list1, type, i), IGET(list2, type, i)) != 0){ \
             return 0; \
         } \
     } \

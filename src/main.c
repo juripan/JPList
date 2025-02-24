@@ -29,15 +29,15 @@ int filter_for_struct(TestStruct x){return x.num <= 15;}
 
 // define the way the print_list_type function will print out the type
 // TODO: make this less painful to set up
-#define format_int(i) "%d", iget(list, int, i)
-#define format_char(i) "'%c'", iget(list, char, i)
-#define format_str(i) "\"%s\"", iget(list, str, i)
-#define format_test_struct(i) "(num: %d, name: \"%s\")", iget(list, TestStruct, i).num, iget(list, TestStruct, i).name
+#define format_int(i) "%d", IGET(list, int, i)
+#define format_char(i) "'%c'", IGET(list, char, i)
+#define format_str(i) "\"%s\"", IGET(list, str, i)
+#define format_test_struct(i) "(num: %d, name: \"%s\")", IGET(list, TestStruct, i).num, IGET(list, TestStruct, i).name
 
-add_base_func(int, format_int, int_cmp)
-add_base_func(char, format_char, char_cmp)
-add_base_func(str, format_str, strcmp) //strings are static, cannot be modified
-add_base_func(TestStruct, format_test_struct, struct_cmp)
+ADD_BASE_FUNC(int, format_int, int_cmp)
+ADD_BASE_FUNC(char, format_char, char_cmp)
+ADD_BASE_FUNC(str, format_str, strcmp) //strings are static, cannot be modified
+ADD_BASE_FUNC(TestStruct, format_test_struct, struct_cmp)
 
 // only used for the ease of writing new test functions
 #define TEST_ARGS JPList* int_list, JPList* char_list, JPList* str_list, JPList* struct_list
@@ -218,19 +218,19 @@ void test_eq(TEST_ARGS){
 
     JPList* int_copy = list_ctor(int);
     for(unsigned i = 0; i < int_list->len; i++){
-        append_int(int_copy, iget(int_list, int, i));
+        append_int(int_copy, IGET(int_list, int, i));
     }
     JPList* char_copy = list_ctor(char);
     for(unsigned i = 0; i < char_list->len; i++){
-        append_char(char_copy, iget(char_list, char, i));
+        append_char(char_copy, IGET(char_list, char, i));
     }
     JPList* str_copy = list_ctor(str);
     for(unsigned i = 0; i < str_list->len; i++){
-        append_str(str_copy, iget(str_list, str, i));
+        append_str(str_copy, IGET(str_list, str, i));
     }
     JPList* struct_copy = list_ctor(TestStruct);
     for(unsigned i = 0; i < struct_list->len; i++){
-        append_TestStruct(struct_copy, iget(struct_list, TestStruct, i));
+        append_TestStruct(struct_copy, IGET(struct_list, TestStruct, i));
     }
 
     switch(eq_list_int(int_list, int_copy)){
