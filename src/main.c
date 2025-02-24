@@ -56,10 +56,10 @@ void test_eq(TEST_ARGS);
 
 
 int main(){
-    JPList* ints = list_ctor(int);
-    JPList* chars = list_ctor(char);
-    JPList* words = list_ctor(str);
-    JPList* structs = list_ctor(TestStruct);
+    JPList* ints = LIST_CTOR(int);
+    JPList* chars = LIST_CTOR(char);
+    JPList* words = LIST_CTOR(str);
+    JPList* structs = LIST_CTOR(TestStruct);
     
 
     test_append(ints, chars, words, structs);
@@ -195,11 +195,11 @@ void test_filter(TEST_ARGS){
 void test_create(){
     puts("list make test");
     int arr[] = {1, 2, 3};
-    JPList* intlist_decay = list(arr);
+    JPList* intlist_decay = LIST(arr);
 
-    JPList* intlist = list((int[]){1, 2, 3});
-    JPList* charlist = list((char[]){'a', 'b', 'c'});
-    JPList* strlist = list((str[]){"HELLO", "WORLD"});
+    JPList* intlist = LIST((int[]){1, 2, 3});
+    JPList* charlist = LIST((char[]){'a', 'b', 'c'});
+    JPList* strlist = LIST((str[]){"HELLO", "WORLD"});
 
     print_list_int(intlist_decay);
     print_list_int(intlist);
@@ -216,19 +216,19 @@ void test_create(){
 void test_eq(TEST_ARGS){
     puts("list eq test");
 
-    JPList* int_copy = list_ctor(int);
+    JPList* int_copy = LIST_CTOR(int);
     for(unsigned i = 0; i < int_list->len; i++){
         append_int(int_copy, IGET(int_list, int, i));
     }
-    JPList* char_copy = list_ctor(char);
+    JPList* char_copy = LIST_CTOR(char);
     for(unsigned i = 0; i < char_list->len; i++){
         append_char(char_copy, IGET(char_list, char, i));
     }
-    JPList* str_copy = list_ctor(str);
+    JPList* str_copy = LIST_CTOR(str);
     for(unsigned i = 0; i < str_list->len; i++){
         append_str(str_copy, IGET(str_list, str, i));
     }
-    JPList* struct_copy = list_ctor(TestStruct);
+    JPList* struct_copy = LIST_CTOR(TestStruct);
     for(unsigned i = 0; i < struct_list->len; i++){
         append_TestStruct(struct_copy, IGET(struct_list, TestStruct, i));
     }
