@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct list_h {
     size_t size; // size of the array in memory measured in slots, can change at runtime, defaults to 10
@@ -8,6 +6,14 @@ typedef struct list_h {
     void* data; // the array itself, contains the items
 } JPList;
 
+void* jplist_memmove(void* dest, const void* src, size_t size_bytes){
+    const char* s = src;
+    char* d = dest;
+    for(unsigned i = 0; i < size_bytes / sizeof(char); i++){
+        d[i] = s[i];
+    }
+    return dest;
+}
 
 JPList* list_ctor_(size_t type_size, size_t size, void* array){
     JPList *list = malloc(sizeof(JPList));
@@ -20,7 +26,7 @@ JPList* list_ctor_(size_t type_size, size_t size, void* array){
         list->len = 0;
         list->size = size;
     } else {
-        memmove(list->data, array, type_size * size);
+        jplist_memmove(list->data, array, type_size * size);
         list->len = size;
         list->size = size * 2;
     }
